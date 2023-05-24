@@ -6,24 +6,24 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
     :Thread(){
     var runing = false
     override fun run() {
-      //  val startTime = System.currentTimeMillis()
         while(runing) {
 
             synchronized(gameView.bullets) {
                 val canvas = surfaceHolder.lockCanvas()
-                val iterator = gameView.bullets.iterator()
-                while (iterator.hasNext()) {
-                    val bullet = iterator.next()
-                    if (bullet.elapsedTime >= 10000) {
-                        iterator.remove() // Remove the bullet using the iterator
+                val bulletsToRemove = mutableListOf<Bullet>() // Create a list to store bullets to remove
+                for (bullet in gameView.bullets) {
+                    if (bullet.elapsedTime >= 5000) {
+                        bulletsToRemove.add(bullet) // Add the bullet to the removal list
                     }
                     gameView.update(bullet)
+                }
+                // Remove the bullets outside the iterator loop
+                for (bullet in bulletsToRemove) {
+                    gameView.removeBulletById(bullet.id)
                 }
                 gameView.draw(canvas)
                 surfaceHolder.unlockCanvasAndPost(canvas)
             }
-
-            sleep(10)
         }
     }
 

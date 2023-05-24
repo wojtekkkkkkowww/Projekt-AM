@@ -15,6 +15,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     private var circleColor = getRandomColor()
     val bullets: MutableList<Bullet> = mutableListOf()
     private val thread: GameThread
+    private var amo = 20
 
     init {
         holder.addCallback(this)
@@ -29,6 +30,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     private var initialAngle = 0f
     private var cannonRotation = 0f
     val cannonRadius = 100f
+    var lastIndex = 0
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
@@ -50,15 +52,15 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         val rectRight = centerX + (rectWidth / 2f)
         val rectBottom = centerY + (rectHeight / 2f)
 
-        for (bullet in bullets) {
+        val bulletsCopy = bullets.toList() // Create a copy of the bullets list
+        for (bullet in bulletsCopy) {
             val bulletPaint = Paint().apply {
                 color = bullet.color
                 style = Paint.Style.FILL
             }
 
-            canvas.drawCircle(bullet.x, bullet.y,bullet.radius,bulletPaint)
+            canvas.drawCircle(bullet.x, bullet.y, bullet.radius, bulletPaint)
         }
-
         canvas.save()
 
         canvas.rotate(cannonRotation, centerX, centerY)
@@ -79,7 +81,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                     val clickX = event.x
                     if (isWithinCircleBounds(clickX, clickY)) {
                         circleColor = getRandomColor()
-
+                        amo = 20
                     }
                     else{
                         val newAngle = calculateAngle(event.x, event.y)
@@ -89,20 +91,23 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                         // Metoda prob i bledow
                         cannonRotation = initialAngle - 90
                         // Calculate starting position based on cannon rotation
-                        val startingX = width / 2f - cannonRadius * cos(Math.toRadians((cannonRotation+90).toDouble())).toFloat()
-                        val startingY = height / 2f - cannonRadius * sin(Math.toRadians((cannonRotation+90).toDouble())).toFloat()
+                        val startingX = width / 2f - cannonRadius * cos(Math.toRadians((cannonRotation+87).toDouble())).toFloat()
+                        val startingY = height / 2f - cannonRadius * sin(Math.toRadians((cannonRotation+87).toDouble())).toFloat()
 
-
-                      //  val bullet = Bullet(startingX, startingY,circleColor, 10f)
-                        val bulletSpeed = 10f // Adjust the bullet speed as needed
-                        val bulletDx = -bulletSpeed * cos(Math.toRadians((cannonRotation+90).toDouble())).toFloat()
-                        val bulletDy = -bulletSpeed * sin(Math.toRadians((cannonRotation+90).toDouble())).toFloat()
-
-                        val bullet = Bullet(startingX, startingY, circleColor, 10f)
-                        bullet.dx = bulletDx
-                        bullet.dy = bulletDy
-                        bullets.add(bullet)
-
+                        if(amo!=0) {
+                            //  val bullet = Bullet(startingX, startingY,circleColor, 10f)
+                            val bulletSpeed = 20f // Adjust the bullet speed as needed
+                            val bulletDx =
+                                -bulletSpeed * cos(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
+                            val bulletDy =
+                                -bulletSpeed * sin(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
+                            val bullet = Bullet(startingX, startingY, circleColor, 10f, lastIndex)
+                            lastIndex++
+                            bullet.dx = bulletDx
+                            bullet.dy = bulletDy
+                            bullets.add(bullet)
+                            amo--
+                        }
                     }
                     }
                 MotionEvent.ACTION_MOVE -> {
@@ -129,7 +134,14 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         }
 
     }
-
+    fun removeBulletById(id: Int) {
+        synchronized(bullets) {
+            val bulletToRemove = bullets.find { it.id == id }
+            bulletToRemove?.let {
+                bullets.remove(it)
+            }
+        }
+    }
 
     private fun calculateAngle(x: Float, y: Float): Float {
         val centerX = width / 2f

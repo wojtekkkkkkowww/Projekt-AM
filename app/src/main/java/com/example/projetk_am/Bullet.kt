@@ -5,6 +5,7 @@ class Bullet(
  var y: Float,
  var color: Int,
  var radius: Float,
+ val id:Int,
  private val creationTime: Long = System.currentTimeMillis()
  ) {
 
