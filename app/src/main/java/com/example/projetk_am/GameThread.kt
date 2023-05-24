@@ -21,8 +21,10 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 for (bullet in bulletsToRemove) {
                     gameView.removeBulletById(bullet.id)
                 }
-                gameView.draw(canvas)
-                surfaceHolder.unlockCanvasAndPost(canvas)
+                if(runing){
+                    gameView.draw(canvas)
+                    surfaceHolder.unlockCanvasAndPost(canvas)
+                }
             }
         }
     }

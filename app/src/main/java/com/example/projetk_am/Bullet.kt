@@ -8,7 +8,7 @@ class Bullet(
  val id:Int,
  private val creationTime: Long = System.currentTimeMillis()
  ) {
-
+ var rotation =0f
  var dx = 10f
  var dy = 10f
  val elapsedTime: Long

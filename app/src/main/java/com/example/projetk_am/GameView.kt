@@ -10,6 +10,9 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
+    var weapon = BitmapFactory.decodeResource(resources, R.drawable.bow)
+    var bulletImage = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+
     private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
     private var surfaceCreated = false
     private var circleColor = getRandomColor()
@@ -44,9 +47,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         }
         canvas.drawCircle(centerX, centerY, cannonRadius, cannonPaint)
 
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.cannon)
-        val rectWidth = bitmap.width.toFloat() * 0.1f
-        val rectHeight = bitmap.height.toFloat() * 0.1f
+        val rectWidth = weapon.width.toFloat() * 0.1f
+        val rectHeight = weapon.height.toFloat() * 0.1f
         val rectLeft = centerX - (rectWidth / 2f)
         val rectTop = centerY - (rectHeight / 2f)
         val rectRight = centerX + (rectWidth / 2f)
@@ -54,18 +56,34 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
         val bulletsCopy = bullets.toList() // Create a copy of the bullets list
         for (bullet in bulletsCopy) {
+            /*
             val bulletPaint = Paint().apply {
                 color = bullet.color
                 style = Paint.Style.FILL
-            }
+            }*/
+            val bulletWidth = bulletImage.width.toFloat() * 0.03f // Set the width of the rectangle based on bullet radius
+            val bulletHeight = bulletImage.width.toFloat() * 0.03f // Set the height of the rectangle based on bullet radius
+            val bulletLeft = bullet.x - (bulletWidth/2f)
+            val bulletTop = bullet.y - (bulletHeight/2f)
+            val bulletRight = bullet.x + (bulletWidth/2f)
+            val bulletBottom = bullet.y + (bulletHeight/2f)
 
-            canvas.drawCircle(bullet.x, bullet.y, bullet.radius, bulletPaint)
+         //   val coloredBitmap = bulletImage.copy(Bitmap.Config.ARGB_8888, true)
+            val bulletPaint = Paint().apply {
+                colorFilter = PorterDuffColorFilter(bullet.color, PorterDuff.Mode.SRC_IN)
+            }
+            canvas.save() // Save the current canvas state
+            canvas.rotate(bullet.rotation - 180f, bullet.x, bullet.y) // Rotate the canvas by the specified angle
+
+            canvas.drawBitmap(bulletImage, null, RectF(bulletLeft, bulletTop, bulletRight, bulletBottom), bulletPaint)
+
+            canvas.restore()
         }
         canvas.save()
 
         canvas.rotate(cannonRotation, centerX, centerY)
 
-        canvas.drawBitmap(bitmap, null, RectF(rectLeft, rectTop, rectRight, rectBottom), null)
+        canvas.drawBitmap(weapon, null, RectF(rectLeft, rectTop, rectRight, rectBottom), null)
 
         canvas.restore()
     }
@@ -97,11 +115,13 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                         if(amo!=0) {
                             //  val bullet = Bullet(startingX, startingY,circleColor, 10f)
                             val bulletSpeed = 20f // Adjust the bullet speed as needed
+
                             val bulletDx =
                                 -bulletSpeed * cos(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
                             val bulletDy =
                                 -bulletSpeed * sin(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
                             val bullet = Bullet(startingX, startingY, circleColor, 10f, lastIndex)
+                            bullet.rotation = cannonRotation
                             lastIndex++
                             bullet.dx = bulletDx
                             bullet.dy = bulletDy
@@ -128,9 +148,11 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
         if (bullet.x <= 0 || bullet.x + bullet.radius >= width) {
             bullet.dx = -bullet.dx
+            bullet.rotation = -bullet.rotation
         }
         if (bullet.y <= 0 || bullet.y + bullet.radius >= height) {
             bullet.dy = -bullet.dy
+            bullet.rotation = -bullet.rotation +180f
         }
 
     }
