@@ -5,20 +5,57 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
     var weapon = BitmapFactory.decodeResource(resources, R.drawable.bow)
     var bulletImage = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+    var enemyImage = BitmapFactory.decodeResource(resources,R.drawable.ballon)
+    var confettiImage = BitmapFactory.decodeResource(resources,R.drawable.confetti)
+    var health = 10
+
 
     private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
     private var surfaceCreated = false
     private var circleColor = getRandomColor()
     val bullets: MutableList<Bullet> = mutableListOf()
+    val enemies: MutableList<Enemy> = mutableListOf()
+    val confettiList: MutableList<Confetti> = mutableListOf()
     private val thread: GameThread
     private var amo = 20
+
+
+
+    val timer = Timer()
+
+    // Define a TimerTask that adds a new enemy
+    val task = object : TimerTask() {
+        override fun run() {
+            val enemy = Enemy(width - 1f, Random.nextFloat()*height, getRandomColor())
+            val dx = Random.nextFloat() * -10f // Generate random value between -10 and 0
+            val dy = Random.nextFloat() * 20f - 10f // Generate random value between -10 and 10
+
+            val magnitude = sqrt(dx * dx + dy * dy) // Calculate the magnitude of the vector
+
+            val normalizedDx = dx / magnitude * 10f // Normalize the dx value with constant speed
+            val normalizedDy = dy / magnitude * 10f
+            enemy.dx = normalizedDx
+            enemy.dy = normalizedDy
+            enemy.height = enemyImage.height*0.01f
+            enemy.width =  enemyImage.height*0.01f
+            enemy.id = lastIndex
+            lastIndex++
+            enemies.add(enemy)
+        }
+    }
+
+
+// Schedule the task to run after 10 seconds (10000 milliseconds)
+
 
     init {
         holder.addCallback(this)
@@ -54,31 +91,66 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         val rectRight = centerX + (rectWidth / 2f)
         val rectBottom = centerY + (rectHeight / 2f)
 
-        val bulletsCopy = bullets.toList() // Create a copy of the bullets list
+        val bulletsCopy = bullets.toList()
+
+        //Drawing bullets
         for (bullet in bulletsCopy) {
-            /*
-            val bulletPaint = Paint().apply {
-                color = bullet.color
-                style = Paint.Style.FILL
-            }*/
-            val bulletWidth = bulletImage.width.toFloat() * 0.03f // Set the width of the rectangle based on bullet radius
-            val bulletHeight = bulletImage.width.toFloat() * 0.03f // Set the height of the rectangle based on bullet radius
+
+            val bulletWidth = bulletImage.width.toFloat() * 0.03f
+            val bulletHeight = bulletImage.height.toFloat() * 0.03f
             val bulletLeft = bullet.x - (bulletWidth/2f)
             val bulletTop = bullet.y - (bulletHeight/2f)
             val bulletRight = bullet.x + (bulletWidth/2f)
             val bulletBottom = bullet.y + (bulletHeight/2f)
 
-         //   val coloredBitmap = bulletImage.copy(Bitmap.Config.ARGB_8888, true)
             val bulletPaint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(bullet.color, PorterDuff.Mode.SRC_IN)
             }
-            canvas.save() // Save the current canvas state
-            canvas.rotate(bullet.rotation - 180f, bullet.x, bullet.y) // Rotate the canvas by the specified angle
+            canvas.save()
+            canvas.rotate(bullet.rotation - 180f, bullet.x, bullet.y)
 
             canvas.drawBitmap(bulletImage, null, RectF(bulletLeft, bulletTop, bulletRight, bulletBottom), bulletPaint)
 
             canvas.restore()
         }
+
+        //drawing enemies
+        for (enemy in enemies) {
+            val enemyWidth = enemyImage.width.toFloat() * 0.01f
+            val enemyHeight = enemyImage.height.toFloat() * 0.01f
+            val enemyLeft = enemy.x - (enemyWidth/2f)
+            val enemyTop = enemy.y - (enemyHeight/2f)
+            val enemyRight = enemy.x + (enemyWidth/2f)
+            val enemyBottom = enemy.y + (enemyHeight/2f)
+
+
+            val enemyPaint = Paint().apply {
+                colorFilter = PorterDuffColorFilter(enemy.color, PorterDuff.Mode.SRC_IN)
+            }
+            canvas.save()
+            canvas.drawBitmap(enemyImage, null, RectF(enemyLeft, enemyTop, enemyRight, enemyBottom), enemyPaint)
+
+            canvas.restore()
+        }
+        for (confetti in confettiList) {
+            val confettiWidth = confettiImage.width.toFloat() * 0.2f
+            val confettiHeight = confettiImage.height.toFloat() * 0.2f
+            val confettiLeft = confetti.x - (confettiWidth/2f)
+            val confettiTop = confetti.y - (confettiHeight/2f)
+            val confettiRight = confetti.x + (confettiWidth/2f)
+            val confettiBottom = confetti.y + (confettiHeight/2f)
+
+            canvas.save()
+            canvas.drawBitmap(confettiImage, null, RectF(confettiLeft, confettiTop, confettiRight, confettiBottom), null)
+
+            canvas.restore()
+        }
+
+
+
+
+
+
         canvas.save()
 
         canvas.rotate(cannonRotation, centerX, centerY)
@@ -154,13 +226,37 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             bullet.dy = -bullet.dy
             bullet.rotation = -bullet.rotation +180f
         }
+    }
+    fun updateE(enemy: Enemy) {
+
+        enemy.x += enemy.dx
+        enemy.y += enemy.dy
+
+        if (enemy.x <= 0 || enemy.x + enemy.height*0.01f >= width) {
+            health--
+            enemy.isAlive = false
+        }
+        if (enemy.y <= 0 || enemy.y + enemy.width*0.01f >= height) {
+            enemy.dy = -enemy.dy
+            health--
+        }
 
     }
+
+
     fun removeBulletById(id: Int) {
         synchronized(bullets) {
             val bulletToRemove = bullets.find { it.id == id }
             bulletToRemove?.let {
                 bullets.remove(it)
+            }
+        }
+    }
+    fun removeEnemyById(id: Int) {
+        synchronized(enemies) {
+            val bulletToRemove = enemies.find { it.id == id }
+            bulletToRemove?.let {
+                enemies.remove(it)
             }
         }
     }
@@ -205,6 +301,9 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         holder.unlockCanvasAndPost(canvas)
         thread.runing = true
         thread.start()
+        timer.scheduleAtFixedRate(task, 1000, Random.nextInt(10000).toLong())
+
+
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, p1: Int, p2: Int, p3: Int) {

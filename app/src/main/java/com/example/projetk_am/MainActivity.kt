@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private var currentImageIndex: Int = 0
     private lateinit var launcher: ActivityResultLauncher<Intent>
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
