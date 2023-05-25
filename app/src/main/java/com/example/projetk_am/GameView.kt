@@ -163,7 +163,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
 
 
-    fun touchEvent(event: MotionEvent): Boolean {
+    private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -203,11 +203,14 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                     }
                     }
                 MotionEvent.ACTION_MOVE -> {
-                    val newAngle = calculateAngle(event.x, event.y)
-                    val rotationAngle = newAngle - initialAngle
-                    cannonRotation += rotationAngle
-                    initialAngle = newAngle
-
+                    val clickX =event.x
+                    val clickY = event.y
+                    if (!isWithinCircleBounds(clickX, clickY)) {
+                            val newAngle = calculateAngle(clickX, clickY)
+                            val rotationAngle = newAngle - initialAngle
+                            cannonRotation += rotationAngle
+                            initialAngle = newAngle
+                        }
                 }
             }
         }

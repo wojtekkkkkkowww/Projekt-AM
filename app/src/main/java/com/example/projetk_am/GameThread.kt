@@ -43,6 +43,7 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                             enemyBottom > bulletTop && enemyTop < bulletBottom && bullet.color == enemy.color
                         ) {
                             enemy.isAlive = false
+                            bulletsToRemove.add(bullet)
                             val confetti = Confetti(enemy.x, enemy.y)
                             gameView.confettiList.add(confetti)
                             // Handle the collision logic here
