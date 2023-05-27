@@ -2,6 +2,7 @@ package com.example.projetk_am
 
 import android.content.Context
 import android.graphics.*
+import android.os.Bundle
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -27,6 +28,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     val confettiList: MutableList<Confetti> = mutableListOf()
     private val thread: GameThread
     private var amo = 20
+    var difficulty = 0
+    var type = 0
 
 
 
@@ -41,8 +44,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
             val magnitude = sqrt(dx * dx + dy * dy) // Calculate the magnitude of the vector
 
-            val normalizedDx = dx / magnitude * 10f // Normalize the dx value with constant speed
-            val normalizedDy = dy / magnitude * 10f
+            val normalizedDx = dx * difficulty/ magnitude * 10f // Normalize the dx value with constant speed
+            val normalizedDy = dy * difficulty/ magnitude * 10f
             enemy.dx = normalizedDx
             enemy.dy = normalizedDy
             enemy.height = enemyImage.height*0.01f
@@ -92,12 +95,11 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         val rectBottom = centerY + (rectHeight / 2f)
 
         val bulletsCopy = bullets.toList()
-
         //Drawing bullets
         for (bullet in bulletsCopy) {
 
-            val bulletWidth = bulletImage.width.toFloat() * 0.03f
-            val bulletHeight = bulletImage.height.toFloat() * 0.03f
+            val bulletWidth = bulletImage.width.toFloat() * 0.03f //* (type)  //teraz losowo są większe
+            val bulletHeight = bulletImage.height.toFloat() * 0.03f //* (type)  //teraz losowo są większe
             val bulletLeft = bullet.x - (bulletWidth/2f)
             val bulletTop = bullet.y - (bulletHeight/2f)
             val bulletRight = bullet.x + (bulletWidth/2f)
@@ -145,11 +147,6 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
             canvas.restore()
         }
-
-
-
-
-
 
         canvas.save()
 
@@ -201,16 +198,16 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                             amo--
                         }
                     }
-                    }
+                }
                 MotionEvent.ACTION_MOVE -> {
                     val clickX =event.x
                     val clickY = event.y
                     if (!isWithinCircleBounds(clickX, clickY)) {
-                            val newAngle = calculateAngle(clickX, clickY)
-                            val rotationAngle = newAngle - initialAngle
-                            cannonRotation += rotationAngle
-                            initialAngle = newAngle
-                        }
+                        val newAngle = calculateAngle(clickX, clickY)
+                        val rotationAngle = newAngle - initialAngle
+                        cannonRotation += rotationAngle
+                        initialAngle = newAngle
+                    }
                 }
             }
         }
