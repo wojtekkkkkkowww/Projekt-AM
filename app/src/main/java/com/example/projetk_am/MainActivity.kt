@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentImageIndex: Int = 0
     private lateinit var launcher: ActivityResultLauncher<Intent>
+    private lateinit var launcherG: ActivityResultLauncher<Intent>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,37 +29,59 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         imageView = findViewById(R.id.imageView)
         loadBitmaps()
+        imageView.setImageBitmap(imageList[0])
+
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                     //
             }
         }
 
+        launcherG = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                val index = data?.getIntExtra( "index",0)
+                if(index != null) {
+                    currentImageIndex = index
+                    imageView.setImageBitmap(imageList[index])
+
+                }
+            }
+        }
 
     }
     private fun loadBitmaps() {
         // Add bitmaps to the imageList here
         val cannon1: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cannon)
         val cannon2: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bow)
+        val cannon3: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.tank)
+        val cannon4: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.human)
 
-        imageList.add(cannon1)
         imageList.add(cannon2)
+        imageList.add(cannon1)
+        imageList.add(cannon3)
+        imageList.add(cannon4)
+
 
         val bullet1: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bullet)
         val bullet2: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+        val bullet3: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.fire)
+        val bullet4: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bullet2)
 
-        imageListB.add(bullet1)
+
         imageListB.add(bullet2)
-
-
-
+        imageListB.add(bullet1)
+        imageListB.add(bullet3)
+        imageListB.add(bullet4)
 
     }
 
     fun imageClick(view: View) {
-        currentImageIndex = (currentImageIndex + 1) % imageList.size
-        imageView.setImageBitmap(imageList[currentImageIndex])
+       // currentImageIndex = (currentImageIndex + 1) % imageList.size
+       // imageView.setImageBitmap(imageList[currentImageIndex])
 
+        val intent = Intent(this, WeaponGalleryActivity::class.java)
+        launcherG.launch(intent)
 
     }
     fun buttonClick(view: View) {
