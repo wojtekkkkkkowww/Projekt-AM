@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         imageView.setImageBitmap(imageList[0])
 
         highscoreButton.setOnClickListener {
-            val intent = Intent(this, Highscore::class.java)
+            val intent = Intent(this, HighscoreActivity::class.java)
             startActivity(intent)
         }
 

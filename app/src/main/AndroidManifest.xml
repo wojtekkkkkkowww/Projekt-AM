@@ -18,7 +18,7 @@
             android:name=".WeaponGalleryActivity"
             android:exported="false" />
         <activity
-            android:name=".Highscore"
+            android:name=".HighscoreActivity"
             android:exported="false" />
 
         <activity

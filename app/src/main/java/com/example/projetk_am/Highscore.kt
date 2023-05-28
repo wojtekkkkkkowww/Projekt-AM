@@ -1,41 +1,24 @@
 package com.example.projetk_am
 
-import android.os.Bundle
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
+import com.orm.SugarRecord
 
-class Highscore : AppCompatActivity() {
+class Highscore : SugarRecord(){
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.highscore_activity)
-        val backButton : Button = findViewById(R.id.backButton)
-        backButton.setOnClickListener{
-             finish()
-             overridePendingTransition(0,0)
+    private val highScoreList: MutableMap<String, Int> = HashMap()
+    fun addScore(nick: String, score: Int) {
+        highScoreList[nick] = score
+    }
+    fun getHighScoreList(): Map<String, Int> {
+        return highScoreList
+    }
+    fun getSortedHighScores(): List<Pair<String, Int>> {
+        return highScoreList.toList().sortedBy { (_, score) -> score }.reversed()
+    }
+    fun printTop10(){
+        val top10 = getSortedHighScores().take(10)
+        top10.forEachIndexed { index, (nick, score) ->
+            Log.i("test", "${index + 1}. $nick --- $score")
         }
     }
-
-    /*fun save(nick: String, wynik:Int){
-
-        with(sharedPref.edit()){
-            putString(nick,wynik.toString())
-            apply()
-        }
-    }
-
-    fun remove(nick: String){
-        val sharedPref = context.getSharedPreferences("highscores", 0)
-        with(sharedPref.edit()){
-            remove(nick)
-            apply()
-        }
-    }
-
-    fun get(nick: String): Int {
-        val sharedPref = contex.getSharedPreferences("highscores", 0)
-        return Integer.parseInt(sharedPref.getString(nick, 0).toString())
-    }**/
-
 }

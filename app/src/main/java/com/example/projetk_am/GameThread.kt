@@ -92,6 +92,7 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
         }
         gameView.gameActivity!!.runOnUiThread {
             Toast.makeText(gameView.context, "You Lose", Toast.LENGTH_SHORT).show()
+            
         }
         gameView.gameActivity!!.finish()
 
