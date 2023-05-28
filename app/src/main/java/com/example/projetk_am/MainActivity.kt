@@ -17,8 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,29 +55,39 @@ class MainActivity : AppCompatActivity() {
 
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                lateinit var nick : String
+                val score = result.data?.getIntExtra("index", 0)
+
+                Log.i("score", "$score")
 
                 // tu ma wyskakiwac event z nickiem i ustawiany nick
 
-                /*AlertDialog.Builder(this)
+                val dialogView = layoutInflater.inflate(R.layout.dialog_nickname, null)
+                val editText = dialogView.findViewById<EditText>(R.id.editText)
+
+                AlertDialog.Builder(this)
                     .setTitle("Podaj swój nick")
-                    .setMessage("Aby kontynuowac, podaj swój nick")
+                    .setView(dialogView)
                     .setPositiveButton("Kontynuuj") { dialog, which ->
-                        nick = (dialog as AlertDialog).findViewById<EditText>(android.R.id.edit).text.toString()
+                        val fileName = "scores.txt"
+                        val nick = editText.text.toString().replace(" ", "")
+
+                        try {
+                            val file = File(filesDir, fileName) // Create a File object using the file path in internal storage
+                            FileWriter(file, true).use { fileWriter ->
+                                BufferedWriter(fileWriter).use { bufferedWriter ->
+                                    bufferedWriter.write("$nick $score")
+                                    bufferedWriter.newLine()
+                                }
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                        Log.i("score", "$score")
                     }
                     .create()
                     .show()
-                runBlocking {
-                    delay(1000)
-                }*/
 
-                val score = result.data?.getIntExtra("index", 0)
-                if(score != null)
-                    Log.i("score", "$score")
-                val sharedPref = getSharedPreferences("scores", MODE_PRIVATE)
-                if (score != null) {
-                    sharedPref.edit().putInt(nick, score).apply()
-                }
+
             }
             Log.i("score", "null")
         }
