@@ -23,7 +23,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     var confettiImage = BitmapFactory.decodeResource(resources,R.drawable.confetti)
     var health = 10
     var score = 0
-
+    val enemyWidth = enemyImage.width.toFloat() * 0.01f
+    val enemyHeight = enemyImage.height.toFloat() * 0.01f
 
     private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
     private var surfaceCreated = false
@@ -53,8 +54,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             val normalizedDy = dy * difficulty/ magnitude * 10f
             enemy.dx = normalizedDx
             enemy.dy = normalizedDy
-            enemy.height = enemyImage.height*0.01f
-            enemy.width =  enemyImage.height*0.01f
+            enemy.height = enemyHeight
+            enemy.width =  enemyHeight
             enemy.id = lastIndex
             lastIndex++
             enemies.add(enemy)
@@ -124,11 +125,10 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
             canvas.restore()
         }
-
+        val enemyCopy = enemies.toList()
         //drawing enemies
-        for (enemy in enemies) {
-            val enemyWidth = enemyImage.width.toFloat() * 0.01f
-            val enemyHeight = enemyImage.height.toFloat() * 0.01f
+        for (enemy in enemyCopy) {
+
             val enemyLeft = enemy.x - (enemyWidth/2f)
             val enemyTop = enemy.y - (enemyHeight/2f)
             val enemyRight = enemy.x + (enemyWidth/2f)
@@ -255,13 +255,13 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         enemy.x += enemy.dx
         enemy.y += enemy.dy
 
-        if (enemy.x <= 0 || enemy.x + enemy.height*0.01f >= width) {
-            health--
+        if (enemy.x <= 0 || enemy.x + enemy.height *0.01f>= width) {
+            if(enemy.isAlive)
+                health--
             enemy.isAlive = false
         }
         if (enemy.y <= 0 || enemy.y + enemy.width*0.01f >= height) {
             enemy.dy = -enemy.dy
-            health--
 
         }
 

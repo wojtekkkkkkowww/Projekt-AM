@@ -12,12 +12,15 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
             synchronized(surfaceHolder) {
 
                 val canvas = surfaceHolder.lockCanvas()
+
+                val bullets = gameView.bullets.toList()
+                val enemies = gameView.enemies.toList()
                 val bulletsToRemove =
                     mutableListOf<Bullet>() // Create a list to store bullets to remove
                 val enemiesToRemove =
                     mutableListOf<Enemy>() // Create a list to store bullets to remove
 
-                for (bullet in gameView.bullets) {
+                for (bullet in bullets) {
                     if (bullet.elapsedTime >= 5000) {
                         bulletsToRemove.add(bullet) // Add the bullet to the removal list
                     }
@@ -26,9 +29,9 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 // Remove the bullets outside the iterator loop
 
 
-                for (enemy in gameView.enemies) {
+                for (enemy in enemies) {
 
-                    for (bullet in gameView.bullets) {
+                    for (bullet in bullets) {
                         // Calculate the coordinates and sizes for the enemy and bullet
                         val enemyLeft = enemy.x
                         val enemyRight = enemy.x + enemy.width
