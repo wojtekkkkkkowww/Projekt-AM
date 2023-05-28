@@ -3,9 +3,13 @@ package com.example.projetk_am
 import android.content.Context
 import android.graphics.*
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.view.TextureView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -78,6 +82,10 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         canvas.drawColor(Color.WHITE)
+
+        drawCounters(canvas)
+
+
         val centerX = width / 2f
         val centerY = height / 2f
 
@@ -148,6 +156,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             canvas.restore()
         }
 
+
         canvas.save()
 
         canvas.rotate(cannonRotation, centerX, centerY)
@@ -155,11 +164,21 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         canvas.drawBitmap(weapon, null, RectF(rectLeft, rectTop, rectRight, rectBottom), null)
 
         canvas.restore()
+
     }
 
-
-
-
+    fun drawCounters(canvas: Canvas){
+        val red = Paint().apply {
+            color = Color.RED
+            textSize = 120f
+        }
+        val black = Paint().apply {
+            color = Color.BLACK
+            textSize = 120f
+        }
+        canvas.drawText("Życie: $health", 50f, 120f, red)
+        canvas.drawText("Ammo: $amo", 850f, 120f, black)
+    }
     private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {
             when (event.action) {
@@ -213,6 +232,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         }
         return true
     }
+
     fun update(bullet: Bullet) {
 
         bullet.x += bullet.dx
@@ -227,6 +247,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             bullet.rotation = -bullet.rotation +180f
         }
     }
+
     fun updateE(enemy: Enemy) {
 
         enemy.x += enemy.dx
@@ -239,9 +260,11 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         if (enemy.y <= 0 || enemy.y + enemy.width*0.01f >= height) {
             enemy.dy = -enemy.dy
             health--
+
         }
 
     }
+
 
 
     fun removeBulletById(id: Int) {
@@ -252,6 +275,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             }
         }
     }
+
     fun removeEnemyById(id: Int) {
         synchronized(enemies) {
             val bulletToRemove = enemies.find { it.id == id }
@@ -272,6 +296,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         )
         return angle.toFloat()
     }
+
     private fun isWithinCircleBounds(x: Float, y: Float): Boolean {
         val centerX = width / 2f
         val centerY = height / 2f
@@ -294,16 +319,12 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         surfaceCreated = true
-
-
         val canvas = holder.lockCanvas()
         draw(canvas)
         holder.unlockCanvasAndPost(canvas)
         thread.runing = true
         thread.start()
         timer.scheduleAtFixedRate(task, 1000, Random.nextInt(10000).toLong())
-
-
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
@@ -311,7 +332,6 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         thread.runing = false
-
     }
 }
 

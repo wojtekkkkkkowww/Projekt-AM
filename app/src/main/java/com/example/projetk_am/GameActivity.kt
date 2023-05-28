@@ -2,6 +2,8 @@ package com.example.projetk_am
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class GameActivity : AppCompatActivity() {
@@ -18,6 +20,7 @@ class GameActivity : AppCompatActivity() {
         val mView = GameView(this)
         mView.weapon = weapon
         mView.bulletImage = bullet
+
         if (difficulty != null) {
             mView.difficulty = difficulty.toInt()
         }
@@ -25,5 +28,6 @@ class GameActivity : AppCompatActivity() {
             mView.type = type.toInt()
         }
         setContentView(mView)
+
     }
 }
