@@ -24,7 +24,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     val enemyHeight = enemyImage.height.toFloat() * 0.01f
     var gameActivity:GameActivity? = null
 
-    private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
+    private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.parseColor("#FFA500"), Color.CYAN)
     private var surfaceCreated = false
     private var circleColor = getRandomColor()
     val bullets: MutableList<Bullet> = mutableListOf()
@@ -51,8 +51,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             val normalizedDy = dy * difficulty/ magnitude * 10f
             enemy.dx = normalizedDx
             enemy.dy = normalizedDy
-            enemy.height = enemyHeight
-            enemy.width =  enemyHeight
+            enemy.height = 15f
+            enemy.width =  15f
             enemy.id = lastIndex
             lastIndex++
             enemies.add(enemy)
@@ -188,7 +188,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                                 -bulletSpeed * cos(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
                             val bulletDy =
                                 -bulletSpeed * sin(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
-                            val bullet = Bullet(startingX, startingY, circleColor, 10f, lastIndex)
+                            val bullet = Bullet(startingX, startingY, circleColor, bulletImage.height.toFloat()* 0.03f * (size/2 + 1), lastIndex)
                             bullet.rotation = cannonRotation
                             lastIndex++
                             bullet.dx = bulletDx
@@ -218,11 +218,11 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         bullet.x += bullet.dx
         bullet.y += bullet.dy
 
-        if (bullet.x <= 0 || bullet.x + bullet.radius >= width) {
+        if (bullet.x <= 0 || bullet.x  >= width) {
             bullet.dx = -bullet.dx
             bullet.rotation = -bullet.rotation
         }
-        if (bullet.y <= 0 || bullet.y + bullet.radius >= height) {
+        if (bullet.y <= 0 || bullet.y  >= height) {
             bullet.dy = -bullet.dy
             bullet.rotation = -bullet.rotation +180f
         }
@@ -233,12 +233,12 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         enemy.x += enemy.dx
         enemy.y += enemy.dy
 
-        if (enemy.x <= 0 || enemy.x + enemy.height *0.01f>= width) {
+        if (enemy.x - enemy.height <= 0 ) {
             if(enemy.isAlive)
                 health--
             enemy.isAlive = false
         }
-        if (enemy.y <= 0 || enemy.y + enemy.width*0.01f >= height) {
+        if (enemy.y -enemy.height -60f <= 0 || enemy.y + enemy.height >= height) {
             enemy.dy = -enemy.dy
         }
     }
