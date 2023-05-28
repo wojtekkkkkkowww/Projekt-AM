@@ -6,9 +6,11 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
     Thread() {
     var runing = false
     override fun run() {
+
         while (runing) {
 
             synchronized(surfaceHolder) {
+
                 val canvas = surfaceHolder.lockCanvas()
                 val bulletsToRemove =
                     mutableListOf<Bullet>() // Create a list to store bullets to remove
@@ -46,6 +48,7 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                             bulletsToRemove.add(bullet)
                             val confetti = Confetti(enemy.x, enemy.y)
                             gameView.confettiList.add(confetti)
+                            gameView.score++
                             // Handle the collision logic here
                         }
                     }
@@ -78,8 +81,15 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 sleep(10)
 
             }
+            if(gameView.health <= 0){
+                //gameView.handleLost()
+                runing = false;
+            }
         }
+
     }
+
+
 
 
 }

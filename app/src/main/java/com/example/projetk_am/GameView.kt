@@ -22,6 +22,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     var enemyImage = BitmapFactory.decodeResource(resources,R.drawable.ballon)
     var confettiImage = BitmapFactory.decodeResource(resources,R.drawable.confetti)
     var health = 10
+    var score = 0
 
 
     private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
@@ -170,14 +171,15 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     fun drawCounters(canvas: Canvas){
         val red = Paint().apply {
             color = Color.RED
-            textSize = 120f
+            textSize = 80f
         }
         val black = Paint().apply {
             color = Color.BLACK
-            textSize = 120f
+            textSize = 80f
         }
-        canvas.drawText("Życie: $health", 50f, 120f, red)
-        canvas.drawText("Ammo: $amo", 850f, 120f, black)
+        canvas.drawText("Życia: $health", 50f, 220f, red)
+        canvas.drawText("Ammo: $amo", 1000f, 220f, black)
+        canvas.drawText("Wynik: $score", 550f, 120f, black)
     }
     private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {
