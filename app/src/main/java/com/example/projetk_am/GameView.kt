@@ -25,6 +25,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     var score = 0
     val enemyWidth = enemyImage.width.toFloat() * 0.01f
     val enemyHeight = enemyImage.height.toFloat() * 0.01f
+    var gameActivity:GameActivity? = null
 
     private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.CYAN)
     private var surfaceCreated = false

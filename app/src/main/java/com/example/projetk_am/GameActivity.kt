@@ -20,6 +20,7 @@ class GameActivity : AppCompatActivity() {
         val mView = GameView(this)
         mView.weapon = weapon
         mView.bulletImage = bullet
+        mView.gameActivity = this
 
         if (difficulty != null) {
             mView.difficulty = difficulty.toInt()

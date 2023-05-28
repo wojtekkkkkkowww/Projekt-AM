@@ -1,6 +1,7 @@
 package com.example.projetk_am
 
 import android.view.SurfaceHolder
+import android.widget.Toast
 
 class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView: GameView) :
     Thread() {
@@ -85,10 +86,14 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
 
             }
             if(gameView.health <= 0){
-                
+                runing = false
+
             }
         }
-
+        gameView.gameActivity!!.runOnUiThread {
+            Toast.makeText(gameView.context, "You Lose", Toast.LENGTH_SHORT).show()
+        }
+        gameView.gameActivity!!.finish()
 
     }
 
