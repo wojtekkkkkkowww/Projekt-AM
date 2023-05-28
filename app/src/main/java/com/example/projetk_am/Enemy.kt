@@ -10,6 +10,5 @@ class Enemy (
     var height =0f
     var width = 0f
     var id = 0
-
     var isAlive = true
 }

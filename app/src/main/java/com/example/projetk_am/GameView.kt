@@ -1,26 +1,23 @@
 package com.example.projetk_am
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
-import android.os.Bundle
-import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.TextureView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
+@SuppressLint("ClickableViewAccessibility")
 class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
-    var weapon = BitmapFactory.decodeResource(resources, R.drawable.bow)
-    var bulletImage = BitmapFactory.decodeResource(resources, R.drawable.arrow)
-    var enemyImage = BitmapFactory.decodeResource(resources,R.drawable.ballon)
-    var confettiImage = BitmapFactory.decodeResource(resources,R.drawable.confetti)
+    var weapon: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bow)
+    var bulletImage: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+    var enemyImage: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.ballon)
+    var confettiImage: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.confetti)
     var health = 10
     var score = 0
     val enemyWidth = enemyImage.width.toFloat() * 0.01f
@@ -38,9 +35,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     var difficulty = 0
     var size = 0
     var speed = 0
-
-
-
+    
     val timer = Timer()
 
     // Define a TimerTask that adds a new enemy
@@ -63,10 +58,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             enemies.add(enemy)
         }
     }
-
-
-// Schedule the task to run after 10 seconds (10000 milliseconds)
-
+    
+    // Schedule the task to run after 10 seconds (10000 milliseconds)
 
     init {
         holder.addCallback(this)
@@ -86,9 +79,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         canvas.drawColor(Color.WHITE)
-
-
-
+        
         val centerX = width / 2f
         val centerY = height / 2f
 
@@ -121,9 +112,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             }
             canvas.save()
             canvas.rotate(bullet.rotation - 180f, bullet.x, bullet.y)
-
             canvas.drawBitmap(bulletImage, null, RectF(bulletLeft, bulletTop, bulletRight, bulletBottom), bulletPaint)
-
             canvas.restore()
         }
         val enemyCopy = enemies.toList()
@@ -134,14 +123,12 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
             val enemyTop = enemy.y - (enemyHeight/2f)
             val enemyRight = enemy.x + (enemyWidth/2f)
             val enemyBottom = enemy.y + (enemyHeight/2f)
-
-
+            
             val enemyPaint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(enemy.color, PorterDuff.Mode.SRC_IN)
             }
             canvas.save()
             canvas.drawBitmap(enemyImage, null, RectF(enemyLeft, enemyTop, enemyRight, enemyBottom), enemyPaint)
-
             canvas.restore()
         }
         for (confetti in confettiList) {
@@ -154,33 +141,23 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
             canvas.save()
             canvas.drawBitmap(confettiImage, null, RectF(confettiLeft, confettiTop, confettiRight, confettiBottom), null)
-
             canvas.restore()
         }
-
-
+        
         canvas.save()
-
         canvas.rotate(cannonRotation, centerX, centerY)
-
         canvas.drawBitmap(weapon, null, RectF(rectLeft, rectTop, rectRight, rectBottom), null)
-
         canvas.restore()
-
     }
 
-    fun drawCounters(){
-
-    //    canvas.drawText("Życia: $health", 50f, 220f, red)
+    fun drawCounters(){ 
+  //      canvas.drawText("Życia: $health", 50f, 220f, red)
   //      canvas.drawText("Ammo: $amo", 1000f, 220f, black)
   //      canvas.drawText("Wynik: $score", 550f, 120f, black)
         gameActivity!!.healthTextView.setTextColor(Color.RED)
-        gameActivity!!.healthTextView.text = "Życia: $health"
+        gameActivity!!.healthTextView.setText("Życia: $health")
         gameActivity!!.ammoTextView.text = "Ammo: $amo"
         gameActivity!!.scoreTextView.text = "Wynik: $score"
-
-
-
     }
     private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {
@@ -263,13 +240,9 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         }
         if (enemy.y <= 0 || enemy.y + enemy.width*0.01f >= height) {
             enemy.dy = -enemy.dy
-
         }
-
     }
-
-
-
+    
     fun removeBulletById(id: Int) {
         synchronized(bullets) {
             val bulletToRemove = bullets.find { it.id == id }

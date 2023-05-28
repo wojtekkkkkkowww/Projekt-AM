@@ -95,8 +95,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
+
     private fun loadBitmaps() {
         // Add bitmaps to the imageList here
         val cannon1: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cannon)
@@ -110,7 +110,6 @@ class MainActivity : AppCompatActivity() {
         imageList.add(cannon3)
         imageList.add(cannon4)
         imageList.add(cannon5)
-
 
         val bullet1: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bullet)
         val bullet2: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.arrow)
@@ -150,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         imageListB[currentImageIndex].compress(Bitmap.CompressFormat.PNG, 100, outputStream2) // save the bitmap as PNG to the file
         outputStream2.close()
 
-
         val intent = Intent(this, GameActivity::class.java)
         intent.putExtra("cannonPath", file1.absolutePath) // pass the file path as an extra
         intent.putExtra("bulletPath", file2.absolutePath) // pass the file path as an extra
@@ -160,8 +158,7 @@ class MainActivity : AppCompatActivity() {
         launcher.launch(intent)
     }
 
-
-    fun buttonClick2() {
+    fun buttonClick2(view: View) {
         if(difficulty == 1) {
             difficulty++
             lvlbutton.text = "Medium"

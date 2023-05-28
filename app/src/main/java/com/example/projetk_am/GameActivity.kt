@@ -3,7 +3,6 @@ package com.example.projetk_am
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -25,7 +24,6 @@ class GameActivity : AppCompatActivity() {
         var size = bundle!!.getString("size")
         val mView = GameView(this)
 
-
         mView.weapon = weapon
         mView.bulletImage = bullet
         mView.gameActivity = this
@@ -34,13 +32,11 @@ class GameActivity : AppCompatActivity() {
         scoreTextView = findViewById<TextView>(R.id.textView6)
         ammoTextView = findViewById<TextView>(R.id.textView7)
 
-
         frame.addView(mView)
-        if (difficulty != null) {
+        if (difficulty != null && speed != null && size != null) {
             mView.difficulty = difficulty.toInt()
+            mView.speed = speed.toInt()
+            mView.size = size.toInt()
         }
-
-
-
     }
 }

@@ -5,8 +5,6 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
 class HighscoreActivity : AppCompatActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.highscore_activity)
@@ -16,6 +14,4 @@ class HighscoreActivity : AppCompatActivity() {
              overridePendingTransition(0,0)
         }
     }
-
-
 }

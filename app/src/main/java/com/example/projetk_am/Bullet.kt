@@ -12,6 +12,5 @@ class Bullet(
  var dx = 10f
  var dy = 10f
  val elapsedTime: Long
-  get() = System.currentTimeMillis() - creationTime
-
+ get() = System.currentTimeMillis() - creationTime
 }

@@ -19,8 +19,6 @@ class WeaponGalleryActivity  : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(this,5)
-
-
     }
     private fun loadBitmaps() {
         // Add bitmaps to the imageList here
@@ -30,14 +28,10 @@ class WeaponGalleryActivity  : AppCompatActivity() {
         val cannon4: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.human)
         val cannon5: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.bazooka)
 
-
         imageList.add(cannon2)
         imageList.add(cannon1)
         imageList.add(cannon3)
         imageList.add(cannon4)
         imageList.add(cannon5)
-
-
     }
-
 }

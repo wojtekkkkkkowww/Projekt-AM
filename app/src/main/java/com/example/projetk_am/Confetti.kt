@@ -10,5 +10,4 @@ class Confetti(
     var dy = 10f
     val elapsedTime: Long
         get() = System.currentTimeMillis() - creationTime
-
 }

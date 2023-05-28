@@ -14,8 +14,6 @@ import kotlin.random.Random
 class ImagesAdapter( var imageList: MutableList<Bitmap>,val galleryActivity: WeaponGalleryActivity) :
     RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
-
-
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView
         init{
@@ -46,5 +44,4 @@ class ImagesAdapter( var imageList: MutableList<Bitmap>,val galleryActivity: Wea
     override fun getItemCount(): Int {
         return imageList.size
     }
-
 }

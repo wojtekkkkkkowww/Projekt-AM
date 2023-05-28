@@ -32,7 +32,6 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 }
                 // Remove the bullets outside the iterator loop
 
-
                 for (enemy in enemies) {
 
                     for (bullet in bullets) {
@@ -47,7 +46,7 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                         val bulletTop = bullet.y - bullet.radius
                         val bulletBottom = bullet.y + bullet.radius
 
-// Check for collision
+                        // Check for collision
                         if (enemyRight > bulletLeft && enemyLeft < bulletRight &&
                             enemyBottom > bulletTop && enemyTop < bulletBottom && bullet.color == enemy.color
                         ) {
@@ -80,13 +79,11 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                         }
                     }
 
-
                 if (runing) {
                     gameView.draw(canvas)
                     surfaceHolder.unlockCanvasAndPost(canvas)
                 }
                 sleep(10)
-
             }
             if(gameView.health <= 0){
                 runing = false
@@ -99,12 +96,5 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
             }
         }
         gameView.gameActivity!!.finish()
-
     }
-
-
-
-
-
-
 }
