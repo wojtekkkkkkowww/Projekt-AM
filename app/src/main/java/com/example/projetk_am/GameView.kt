@@ -87,7 +87,6 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         super.draw(canvas)
         canvas.drawColor(Color.WHITE)
 
-        drawCounters(canvas)
 
 
         val centerX = width / 2f
@@ -170,18 +169,18 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
     }
 
-    fun drawCounters(canvas: Canvas){
-        val red = Paint().apply {
-            color = Color.RED
-            textSize = 80f
-        }
-        val black = Paint().apply {
-            color = Color.BLACK
-            textSize = 80f
-        }
-        canvas.drawText("Życia: $health", 50f, 220f, red)
-        canvas.drawText("Ammo: $amo", 1000f, 220f, black)
-        canvas.drawText("Wynik: $score", 550f, 120f, black)
+    fun drawCounters(){
+
+    //    canvas.drawText("Życia: $health", 50f, 220f, red)
+  //      canvas.drawText("Ammo: $amo", 1000f, 220f, black)
+  //      canvas.drawText("Wynik: $score", 550f, 120f, black)
+        gameActivity!!.healthTextView.setTextColor(Color.RED)
+        gameActivity!!.healthTextView.text = "Życia: $health"
+        gameActivity!!.ammoTextView.text = "Ammo: $amo"
+        gameActivity!!.scoreTextView.text = "Wynik: $score"
+
+
+
     }
     private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {

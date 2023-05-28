@@ -7,11 +7,14 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
     Thread() {
     var runing = false
     override fun run() {
-
+        var lose = false
         while (runing) {
 
             synchronized(surfaceHolder) {
 
+                gameView.gameActivity!!.runOnUiThread {
+                    gameView.drawCounters()
+                }
                 val canvas = surfaceHolder.lockCanvas()
 
                 val bullets = gameView.bullets.toList()
@@ -87,12 +90,13 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
             }
             if(gameView.health <= 0){
                 runing = false
-
+                lose = true
             }
         }
-        gameView.gameActivity!!.runOnUiThread {
-            Toast.makeText(gameView.context, "You Lose", Toast.LENGTH_SHORT).show()
-            
+        if(lose){
+            gameView.gameActivity!!.runOnUiThread {
+                Toast.makeText(gameView.context, "You Lose", Toast.LENGTH_SHORT).show()
+            }
         }
         gameView.gameActivity!!.finish()
 
