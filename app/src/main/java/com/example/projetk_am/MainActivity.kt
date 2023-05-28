@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -37,8 +38,14 @@ class MainActivity : AppCompatActivity() {
         imageView2 = findViewById(R.id.imageView2)
         imageView3 = findViewById(R.id.imageView3)
         lvlbutton = findViewById(R.id.button)
+        val highscoreButton = findViewById<Button>(R.id.highscores)
         loadBitmaps()
         imageView.setImageBitmap(imageList[0])
+
+        highscoreButton.setOnClickListener {
+            val intent = Intent(this, Highscore::class.java)
+            startActivity(intent)
+        }
 
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -127,6 +134,14 @@ class MainActivity : AppCompatActivity() {
         currentImageIndex++
         intent.putExtra("value2",currentImageIndex.toString())
         launcher.launch(intent)
+    }
+
+    fun highscoreButtonOnClick(view: View){
+
+        startActivity(Intent(this, Highscore::class.java).apply {
+            //putExtra("keyIdentifier", value)
+        })
+
     }
 
     fun buttonClick2(view: View) {
