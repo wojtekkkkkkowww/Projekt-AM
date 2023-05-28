@@ -49,8 +49,9 @@ class MainActivity : AppCompatActivity() {
 
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                    //
+                    Log.i("as", "test")
             }
+            Log.i("as", "test")
         }
 
         launcherG = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -136,13 +137,6 @@ class MainActivity : AppCompatActivity() {
         launcher.launch(intent)
     }
 
-    fun highscoreButtonOnClick(view: View){
-
-        startActivity(Intent(this, Highscore::class.java).apply {
-            //putExtra("keyIdentifier", value)
-        })
-
-    }
 
     fun buttonClick2(view: View) {
         if(difficulty == 1) {

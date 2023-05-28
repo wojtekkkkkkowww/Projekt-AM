@@ -85,12 +85,14 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
 
             }
             if(gameView.health <= 0){
-                //gameView.handleLost()
-                runing = false;
+                
             }
         }
 
+
     }
+
+
 
 
 
