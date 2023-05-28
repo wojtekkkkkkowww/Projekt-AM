@@ -1,6 +1,8 @@
 package com.example.projetk_am
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,10 +10,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 
@@ -32,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private var bulletSpeed: Int = 2
     private var bulletSize: Int = 0
 
+    @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,9 +56,31 @@ class MainActivity : AppCompatActivity() {
 
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                    Log.i("as", "test")
+                lateinit var nick : String
+
+                // tu ma wyskakiwac event z nickiem i ustawiany nick
+
+                /*AlertDialog.Builder(this)
+                    .setTitle("Podaj swój nick")
+                    .setMessage("Aby kontynuowac, podaj swój nick")
+                    .setPositiveButton("Kontynuuj") { dialog, which ->
+                        nick = (dialog as AlertDialog).findViewById<EditText>(android.R.id.edit).text.toString()
+                    }
+                    .create()
+                    .show()
+                runBlocking {
+                    delay(1000)
+                }*/
+
+                val score = result.data?.getIntExtra("index", 0)
+                if(score != null)
+                    Log.i("score", "$score")
+                val sharedPref = getSharedPreferences("scores", MODE_PRIVATE)
+                if (score != null) {
+                    sharedPref.edit().putInt(nick, score).apply()
+                }
             }
-            Log.i("as", "test")
+            Log.i("score", "null")
         }
 
         launcherG = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -171,3 +199,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

@@ -5,6 +5,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
 class HighscoreActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.highscore_activity)
@@ -13,5 +14,8 @@ class HighscoreActivity : AppCompatActivity() {
              finish()
              overridePendingTransition(0,0)
         }
+        var sharedPrefs = getSharedPreferences("scores", MODE_PRIVATE)
+        var editor = sharedPrefs.edit()
+
     }
 }

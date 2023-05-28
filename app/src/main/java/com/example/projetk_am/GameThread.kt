@@ -1,5 +1,6 @@
 package com.example.projetk_am
 
+import android.app.Activity
 import android.view.SurfaceHolder
 import android.widget.Toast
 
@@ -95,6 +96,10 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 Toast.makeText(gameView.context, "You Lose", Toast.LENGTH_SHORT).show()
             }
         }
+        gameView.gameActivity!!.intent.apply {
+            putExtra("index", gameView.score)
+        }
+        gameView.gameActivity!!.setResult(Activity.RESULT_OK, gameView.gameActivity!!.intent)
         gameView.gameActivity!!.finish()
     }
 }
