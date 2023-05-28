@@ -36,7 +36,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     private val thread: GameThread
     private var amo = 20
     var difficulty = 0
-    var type = 0
+    var size = 0
+    var speed = 0
 
 
 
@@ -109,8 +110,8 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         //Drawing bullets
         for (bullet in bulletsCopy) {
 
-            val bulletWidth = bulletImage.width.toFloat() * 0.03f //* (type)  //teraz losowo są większe
-            val bulletHeight = bulletImage.height.toFloat() * 0.03f //* (type)  //teraz losowo są większe
+            val bulletWidth = bulletImage.width.toFloat() * 0.03f * (size/2 + 1)
+            val bulletHeight = bulletImage.height.toFloat() * 0.03f * (size/2 + 1)
             val bulletLeft = bullet.x - (bulletWidth/2f)
             val bulletTop = bullet.y - (bulletHeight/2f)
             val bulletRight = bullet.x + (bulletWidth/2f)
@@ -205,7 +206,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
                         if(amo!=0) {
                             //  val bullet = Bullet(startingX, startingY,circleColor, 10f)
-                            val bulletSpeed = 20f // Adjust the bullet speed as needed
+                            val bulletSpeed = 20f * (speed/2 + 1) // Adjust the bullet speed as needed
 
                             val bulletDx =
                                 -bulletSpeed * cos(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()

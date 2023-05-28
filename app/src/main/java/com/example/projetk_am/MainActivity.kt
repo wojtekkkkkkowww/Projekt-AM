@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,13 +24,14 @@ class MainActivity : AppCompatActivity() {
     private val imageList: MutableList<Bitmap> = mutableListOf()
     private val imageListB: MutableList<Bitmap> = mutableListOf()
     private val imageListC: MutableList<Bitmap> = mutableListOf()
-    private val imageListD: MutableList<Bitmap> = mutableListOf()
 
     private lateinit var lvlbutton: Button
     private var currentImageIndex: Int = 0
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var launcherG: ActivityResultLauncher<Intent>
     private var difficulty: Int = 1
+    private var bulletSpeed: Int = 2
+    private var bulletSize: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +63,36 @@ class MainActivity : AppCompatActivity() {
                 if(index != null) {
                     currentImageIndex = index
                     imageView.setImageBitmap(imageList[index])
-
+                    if(currentImageIndex == 0) {
+                        imageView2.setImageBitmap(imageListC[2])
+                        imageView3.setImageBitmap(imageListC[0])
+                        bulletSpeed = 2
+                        bulletSize = 0
+                    }
+                    else if(currentImageIndex == 1) {
+                        imageView2.setImageBitmap(imageListC[2])
+                        imageView3.setImageBitmap(imageListC[1])
+                        bulletSpeed = 2
+                        bulletSize = 1
+                    }
+                    else if(currentImageIndex == 2) {
+                        imageView2.setImageBitmap(imageListC[0])
+                        imageView3.setImageBitmap(imageListC[1])
+                        bulletSpeed = 0
+                        bulletSize = 1
+                    }
+                    else if(currentImageIndex == 3) {
+                        imageView2.setImageBitmap(imageListC[1])
+                        imageView3.setImageBitmap(imageListC[0])
+                        bulletSpeed = 1
+                        bulletSize = 0
+                    }
+                    else {
+                        imageView2.setImageBitmap(imageListC[2])
+                        imageView3.setImageBitmap(imageListC[2])
+                        bulletSpeed = 2
+                        bulletSize = 2
+                    }
                 }
             }
         }
@@ -101,20 +132,13 @@ class MainActivity : AppCompatActivity() {
         imageListC.add(bar1)
         imageListC.add(bar2)
         imageListC.add(bar3)
-        imageListD.add(bar3)
-        imageListD.add(bar2)
-        imageListD.add(bar1)
+        imageListC.add(bar2)
+        imageListC.add(bar3)
     }
 
     fun imageClick(view: View) {
-        currentImageIndex = (currentImageIndex + 1) % 3
-       // imageView.setImageBitmap(imageList[currentImageIndex])
-        imageView2.setImageBitmap(imageListC[currentImageIndex])  //te paski nie dzialaja od ostatniego commita
-        imageView3.setImageBitmap(imageListD[currentImageIndex])  //te paski nie dzialaja od ostatniego commita
-
         val intent = Intent(this, WeaponGalleryActivity::class.java)
         launcherG.launch(intent)
-
     }
     fun buttonClick(view: View) {
         val file1 = File(this.cacheDir, "cannon.png") // create a file to save the bitmap as PNG
@@ -132,13 +156,13 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("cannonPath", file1.absolutePath) // pass the file path as an extra
         intent.putExtra("bulletPath", file2.absolutePath) // pass the file path as an extra
         intent.putExtra("value", difficulty.toString())
-        currentImageIndex++
-        intent.putExtra("value2",currentImageIndex.toString())
+        intent.putExtra("speed", bulletSpeed.toString())
+        intent.putExtra("size", bulletSize.toString())
         launcher.launch(intent)
     }
 
 
-    fun buttonClick2(view: View) {
+    fun buttonClick2() {
         if(difficulty == 1) {
             difficulty++
             lvlbutton.text = "Medium"
