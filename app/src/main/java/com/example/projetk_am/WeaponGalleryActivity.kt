@@ -21,7 +21,6 @@ class WeaponGalleryActivity  : AppCompatActivity() {
         recyclerView.layoutManager = GridLayoutManager(this,5)
     }
     private fun loadBitmaps() {
-        // Add bitmaps to the imageList here
         val cannon2: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bow)
         val cannon1: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cannon)
         val cannon3: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.tank)

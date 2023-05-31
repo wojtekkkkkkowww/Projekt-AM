@@ -21,22 +21,21 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                 val bullets = gameView.bullets.toList()
                 val enemies = gameView.enemies.toList()
                 val bulletsToRemove =
-                    mutableListOf<Bullet>() // Create a list to store bullets to remove
+                    mutableListOf<Bullet>()
                 val enemiesToRemove =
-                    mutableListOf<Enemy>() // Create a list to store bullets to remove
+                    mutableListOf<Enemy>()
 
                 for (bullet in bullets) {
                     if (bullet.elapsedTime >= 5000) {
-                        bulletsToRemove.add(bullet) // Add the bullet to the removal list
+                        bulletsToRemove.add(bullet)
                     }
                     gameView.update(bullet)
                 }
-                // Remove the bullets outside the iterator loop
+
 
                 for (enemy in enemies) {
 
                     for (bullet in bullets) {
-                        // Calculate the coordinates and sizes for the enemy and bullet
                         val enemyLeft = enemy.x
                         val enemyRight = enemy.x + enemy.width
                         val enemyTop = enemy.y
@@ -47,7 +46,6 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                         val bulletTop = bullet.y - bullet.radius
                         val bulletBottom = bullet.y + bullet.radius
 
-                        // Check for collision
                         if (enemyRight > bulletLeft && enemyLeft < bulletRight &&
                             enemyBottom > bulletTop && enemyTop < bulletBottom && bullet.color == enemy.color
                         ) {
@@ -56,7 +54,6 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                             val confetti = Confetti(enemy.x, enemy.y)
                             gameView.confettiList.add(confetti)
                             gameView.score++
-                            // Handle the collision logic here
                         }
                     }
                     if (!enemy.isAlive) {
@@ -76,7 +73,7 @@ class GameThread(private val surfaceHolder: SurfaceHolder, private val gameView:
                     while (iterator.hasNext()) {
                         val confetti = iterator.next()
                         if (confetti.elapsedTime >= 200) {
-                            iterator.remove() // Remove the confetti from the list
+                            iterator.remove()
                         }
                     }
 

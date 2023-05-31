@@ -15,8 +15,6 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import java.io.*
 
 class MainActivity : AppCompatActivity() {
@@ -44,14 +42,8 @@ class MainActivity : AppCompatActivity() {
         imageView2 = findViewById(R.id.imageView2)
         imageView3 = findViewById(R.id.imageView3)
         lvlbutton = findViewById(R.id.button)
-        val highscoreButton = findViewById<Button>(R.id.highscores)
         loadBitmaps()
         imageView.setImageBitmap(imageList[0])
-
-        highscoreButton.setOnClickListener {
-            val intent = Intent(this, HighscoreActivity::class.java)
-            startActivity(intent)
-        }
 
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -206,6 +198,13 @@ class MainActivity : AppCompatActivity() {
             difficulty = 1
             lvlbutton.text = "Easy"
         }
+    }
+
+    fun highScoreButtonOnClick(view: View) {
+
+        val intent = Intent(this, HighscoreActivity::class.java)
+        startActivity(intent)
+
     }
 }
 

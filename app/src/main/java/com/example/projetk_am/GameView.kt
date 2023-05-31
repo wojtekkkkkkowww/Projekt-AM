@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -16,15 +17,16 @@ import kotlin.random.Random
 class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
     var weapon: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bow)
     var bulletImage: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.arrow)
-    var enemyImage: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.ballon)
-    var confettiImage: Bitmap = BitmapFactory.decodeResource(resources,R.drawable.confetti)
+    var enemyImage: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.ballon)
+    var confettiImage: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.confetti)
     var health = 10
     var score = 0
     val enemyWidth = enemyImage.width.toFloat() * 0.01f
     val enemyHeight = enemyImage.height.toFloat() * 0.01f
-    var gameActivity:GameActivity? = null
+    var gameActivity: GameActivity? = null
 
-    private val colors = listOf(Color.RED, Color.BLUE, Color.GREEN, Color.parseColor("#FFA500"), Color.CYAN)
+    private val colors =
+        listOf(Color.RED, Color.BLUE, Color.GREEN, Color.parseColor("#FFA500"), Color.CYAN)
     private var surfaceCreated = false
     private var circleColor = getRandomColor()
     val bullets: MutableList<Bullet> = mutableListOf()
@@ -35,36 +37,56 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     var difficulty = 0
     var size = 0
     var speed = 0
-    
-    val timer = Timer()
 
-    // Define a TimerTask that adds a new enemy
-    val task = object : TimerTask() {
-        override fun run() {
-            val enemy = Enemy(width - 1f, Random.nextFloat()*height, getRandomColor())
-            val dx = Random.nextFloat() * -10f // Generate random value between -10 and 0
-            val dy = Random.nextFloat() * 20f - 10f // Generate random value between -10 and 10
+    var currentPeriod = 5000L
+    var running = true
 
-            val magnitude = sqrt(dx * dx + dy * dy) // Calculate the magnitude of the vector
+    fun newEnemy(): Enemy {
+        val randomOffset = Random.nextFloat() * (height / 2)
+        val randomPosition = (height / 2) - randomOffset + (height / 4)
+        val enemy = Enemy(width - 1f, randomPosition, getRandomColor())
+        val dx = Random.nextFloat() * -10f
+        val dy = Random.nextFloat() * 20f - 10f
+        val magnitude = sqrt(dx * dx + dy * dy)
+        val normalizedDx = dx * difficulty / magnitude * 10f
+        val normalizedDy = dy * difficulty / magnitude * 10f
+        enemy.dx = normalizedDx
+        enemy.dy = normalizedDy
+        enemy.height = 15f
+        enemy.width = 15f
+        enemy.id = lastIndex
+        lastIndex++
+        return enemy
+    }
 
-            val normalizedDx = dx * difficulty/ magnitude * 10f // Normalize the dx value with constant speed
-            val normalizedDy = dy * difficulty/ magnitude * 10f
-            enemy.dx = normalizedDx
-            enemy.dy = normalizedDy
-            enemy.height = 15f
-            enemy.width =  15f
-            enemy.id = lastIndex
-            lastIndex++
-            enemies.add(enemy)
+
+    val enemyCreationThread = Thread {
+        var iterations = 0
+        while (running) {
+            val number = Random.nextInt(4)+1
+            for(i in 1 .. number){
+                val enemy = newEnemy()
+                enemies.add(enemy)
+            }
+            iterations++
+            if (iterations % 2 == 0) {
+                if(currentPeriod - 200L >0 )
+                    currentPeriod -= 200L
+            }
+
+            try {
+                val sleepDuration = abs(Random.nextLong()) % currentPeriod + currentPeriod
+                Thread.sleep(sleepDuration)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
         }
     }
-    
-    // Schedule the task to run after 10 seconds (10000 milliseconds)
 
     init {
         holder.addCallback(this)
         isFocusable = true
-        thread  = GameThread(holder,this)
+        thread = GameThread(holder, this)
         setOnTouchListener { _, event ->
             touchEvent(event)
             true
@@ -79,7 +101,6 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         canvas.drawColor(Color.WHITE)
-        
         val centerX = width / 2f
         val centerY = height / 2f
 
@@ -97,68 +118,80 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         val rectBottom = centerY + (rectHeight / 2f)
 
         val bulletsCopy = bullets.toList()
-        //Drawing bullets
         for (bullet in bulletsCopy) {
 
-            val bulletWidth = bulletImage.width.toFloat() * 0.03f * (size/2 + 1)
-            val bulletHeight = bulletImage.height.toFloat() * 0.03f * (size/2 + 1)
-            val bulletLeft = bullet.x - (bulletWidth/2f)
-            val bulletTop = bullet.y - (bulletHeight/2f)
-            val bulletRight = bullet.x + (bulletWidth/2f)
-            val bulletBottom = bullet.y + (bulletHeight/2f)
+            val bulletWidth = bulletImage.width.toFloat() * 0.03f * (size / 2 + 1)
+            val bulletHeight = bulletImage.height.toFloat() * 0.03f * (size / 2 + 1)
+            val bulletLeft = bullet.x - (bulletWidth / 2f)
+            val bulletTop = bullet.y - (bulletHeight / 2f)
+            val bulletRight = bullet.x + (bulletWidth / 2f)
+            val bulletBottom = bullet.y + (bulletHeight / 2f)
 
             val bulletPaint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(bullet.color, PorterDuff.Mode.SRC_IN)
             }
             canvas.save()
             canvas.rotate(bullet.rotation - 180f, bullet.x, bullet.y)
-            canvas.drawBitmap(bulletImage, null, RectF(bulletLeft, bulletTop, bulletRight, bulletBottom), bulletPaint)
+            canvas.drawBitmap(
+                bulletImage,
+                null,
+                RectF(bulletLeft, bulletTop, bulletRight, bulletBottom),
+                bulletPaint
+            )
             canvas.restore()
         }
         val enemyCopy = enemies.toList()
-        //drawing enemies
         for (enemy in enemyCopy) {
 
-            val enemyLeft = enemy.x - (enemyWidth/2f)
-            val enemyTop = enemy.y - (enemyHeight/2f)
-            val enemyRight = enemy.x + (enemyWidth/2f)
-            val enemyBottom = enemy.y + (enemyHeight/2f)
-            
+            val enemyLeft = enemy.x - (enemyWidth / 2f)
+            val enemyTop = enemy.y - (enemyHeight / 2f)
+            val enemyRight = enemy.x + (enemyWidth / 2f)
+            val enemyBottom = enemy.y + (enemyHeight / 2f)
+
             val enemyPaint = Paint().apply {
                 colorFilter = PorterDuffColorFilter(enemy.color, PorterDuff.Mode.SRC_IN)
             }
             canvas.save()
-            canvas.drawBitmap(enemyImage, null, RectF(enemyLeft, enemyTop, enemyRight, enemyBottom), enemyPaint)
+            canvas.drawBitmap(
+                enemyImage,
+                null,
+                RectF(enemyLeft, enemyTop, enemyRight, enemyBottom),
+                enemyPaint
+            )
             canvas.restore()
         }
         for (confetti in confettiList) {
             val confettiWidth = confettiImage.width.toFloat() * 0.2f
             val confettiHeight = confettiImage.height.toFloat() * 0.2f
-            val confettiLeft = confetti.x - (confettiWidth/2f)
-            val confettiTop = confetti.y - (confettiHeight/2f)
-            val confettiRight = confetti.x + (confettiWidth/2f)
-            val confettiBottom = confetti.y + (confettiHeight/2f)
+            val confettiLeft = confetti.x - (confettiWidth / 2f)
+            val confettiTop = confetti.y - (confettiHeight / 2f)
+            val confettiRight = confetti.x + (confettiWidth / 2f)
+            val confettiBottom = confetti.y + (confettiHeight / 2f)
 
             canvas.save()
-            canvas.drawBitmap(confettiImage, null, RectF(confettiLeft, confettiTop, confettiRight, confettiBottom), null)
+            canvas.drawBitmap(
+                confettiImage,
+                null,
+                RectF(confettiLeft, confettiTop, confettiRight, confettiBottom),
+                null
+            )
             canvas.restore()
         }
-        
+
         canvas.save()
         canvas.rotate(cannonRotation, centerX, centerY)
         canvas.drawBitmap(weapon, null, RectF(rectLeft, rectTop, rectRight, rectBottom), null)
         canvas.restore()
     }
 
-    fun drawCounters(){ 
-  //      canvas.drawText("Życia: $health", 50f, 220f, red)
-  //      canvas.drawText("Ammo: $amo", 1000f, 220f, black)
-  //      canvas.drawText("Wynik: $score", 550f, 120f, black)
+    fun drawCounters() {
+
         gameActivity!!.healthTextView.setTextColor(Color.RED)
         gameActivity!!.healthTextView.setText("Życia: $health")
         gameActivity!!.ammoTextView.text = "Ammo: $amo"
         gameActivity!!.scoreTextView.text = "Wynik: $score"
     }
+
     private fun touchEvent(event: MotionEvent): Boolean {
         if (surfaceCreated) {
             when (event.action) {
@@ -168,27 +201,31 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                     if (isWithinCircleBounds(clickX, clickY)) {
                         circleColor = getRandomColor()
                         amo = 20
-                    }
-                    else{
+                    } else {
                         val newAngle = calculateAngle(event.x, event.y)
-                        // Update the initial touch angle
                         initialAngle = newAngle
 
-                        // Metoda prob i bledow
                         cannonRotation = initialAngle - 90
-                        // Calculate starting position based on cannon rotation
-                        val startingX = width / 2f - cannonRadius * cos(Math.toRadians((cannonRotation+87).toDouble())).toFloat()
-                        val startingY = height / 2f - cannonRadius * sin(Math.toRadians((cannonRotation+87).toDouble())).toFloat()
+                        val startingX =
+                            width / 2f - cannonRadius * cos(Math.toRadians((cannonRotation + 87).toDouble())).toFloat()
+                        val startingY =
+                            height / 2f - cannonRadius * sin(Math.toRadians((cannonRotation + 87).toDouble())).toFloat()
 
-                        if(amo!=0) {
-                            //  val bullet = Bullet(startingX, startingY,circleColor, 10f)
-                            val bulletSpeed = 20f * (speed/2 + 1) // Adjust the bullet speed as needed
+                        if (amo != 0) {
+                            val bulletSpeed =
+                                20f * (speed / 2 + 1)
 
                             val bulletDx =
                                 -bulletSpeed * cos(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
                             val bulletDy =
                                 -bulletSpeed * sin(Math.toRadians((cannonRotation + 90).toDouble())).toFloat()
-                            val bullet = Bullet(startingX, startingY, circleColor, bulletImage.height.toFloat()* 0.03f * (size/2 + 1), lastIndex)
+                            val bullet = Bullet(
+                                startingX,
+                                startingY,
+                                circleColor,
+                                bulletImage.height.toFloat() * 0.03f * (size / 2 + 1),
+                                lastIndex
+                            )
                             bullet.rotation = cannonRotation
                             lastIndex++
                             bullet.dx = bulletDx
@@ -199,7 +236,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
                     }
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    val clickX =event.x
+                    val clickX = event.x
                     val clickY = event.y
                     if (!isWithinCircleBounds(clickX, clickY)) {
                         val newAngle = calculateAngle(clickX, clickY)
@@ -218,13 +255,13 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         bullet.x += bullet.dx
         bullet.y += bullet.dy
 
-        if (bullet.x <= 0 || bullet.x  >= width) {
+        if (bullet.x <= 0 || bullet.x >= width) {
             bullet.dx = -bullet.dx
             bullet.rotation = -bullet.rotation
         }
-        if (bullet.y <= 0 || bullet.y  >= height) {
+        if (bullet.y <= 0 || bullet.y >= height) {
             bullet.dy = -bullet.dy
-            bullet.rotation = -bullet.rotation +180f
+            bullet.rotation = -bullet.rotation + 180f
         }
     }
 
@@ -233,16 +270,16 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         enemy.x += enemy.dx
         enemy.y += enemy.dy
 
-        if (enemy.x - enemy.height <= 0 ) {
-            if(enemy.isAlive)
+        if (enemy.x - enemy.height <= 0) {
+            if (enemy.isAlive)
                 health--
             enemy.isAlive = false
         }
-        if (enemy.y -enemy.height -60f <= 0 || enemy.y + enemy.height >= height) {
+        if (enemy.y - enemy.height - 60f <= 0 || enemy.y + enemy.height >= height) {
             enemy.dy = -enemy.dy
         }
     }
-    
+
     fun removeBulletById(id: Int) {
         synchronized(bullets) {
             val bulletToRemove = bullets.find { it.id == id }
@@ -276,18 +313,16 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
     private fun isWithinCircleBounds(x: Float, y: Float): Boolean {
         val centerX = width / 2f
         val centerY = height / 2f
-        val cannonRadius = 100f // Radius of the circle
+        val cannonRadius = 100f
 
-        // Calculate the squared distance between the clicked point and the center of the circle
         val distanceSquared = (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY)
 
-        // Check if the squared distance is less than or equal to the squared radius
         return distanceSquared <= (cannonRadius * cannonRadius)
     }
 
     fun getRandomColor(): Int {
         var randomIndex = Random.nextInt(colors.size)
-        while(colors[randomIndex] == circleColor) {
+        while (colors[randomIndex] == circleColor) {
             randomIndex = Random.nextInt(colors.size)
         }
         return colors[randomIndex]
@@ -300,15 +335,16 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
         holder.unlockCanvasAndPost(canvas)
         thread.runing = true
         thread.start()
-        timer.scheduleAtFixedRate(task, 1000, Random.nextInt(10000).toLong())
+        enemyCreationThread.start()
     }
+
 
     override fun surfaceChanged(holder: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         thread.runing = false
-
+        running = false
     }
 }
 
